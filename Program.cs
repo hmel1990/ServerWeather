@@ -8,15 +8,22 @@ namespace ServerWeather
 {
     internal class Program
     {
-        static async Task Main()
+
+
+
+
+        
+          static async Task Main()
         {
             string port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-            string url = $"http://+:{port}/send/";
+            //string url = $"http://+:{port}/send/"; // Для локального тестирования можно использовать "http://localhost:5000/send/"
+            string url = "http://localhost:5000/send/";
+
 
             HttpListener listener = new HttpListener();
             listener.Prefixes.Add(url);
             listener.Start();
-            //Console.WriteLine($"Сервер запущен на {url}");
+            Console.WriteLine($"Сервер запущен на {url}");
 
             while (true)
             {
@@ -47,7 +54,8 @@ namespace ServerWeather
                 {
                     var resultWeather = new WeatherInfo("Одесса");
                     var resultFromJSON = await resultWeather.DeserializeJsonAsync();
-                    var result = new StringBuilder(resultFromJSON.Weather[0].Description);
+                    var result = new StringBuilder();
+                    result.AppendLine($"Температура: {resultFromJSON.Main.Temp}°C");
 
                     byte[] buffer = Encoding.UTF8.GetBytes(result.ToString());
 
@@ -64,6 +72,9 @@ namespace ServerWeather
 
             response.OutputStream.Close();
         }
+         
+        
+
     }
 
 }
