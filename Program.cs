@@ -16,8 +16,8 @@ namespace ServerWeather
           static async Task Main()
         {
             string port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-            //string url = $"http://+:{port}/send/"; // Для локального тестирования можно использовать "http://localhost:5000/send/"
-            string url = "http://localhost:5000/send/";
+            string url = $"http://+:{port}/send/"; // Для локального тестирования можно использовать "http://localhost:5000/send/"
+            //string url = "http://localhost:5000/send/";
 
 
             HttpListener listener = new HttpListener();
