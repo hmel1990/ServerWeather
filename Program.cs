@@ -1,7 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
-using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ServerWeather
@@ -54,12 +55,18 @@ namespace ServerWeather
                 {
                     var resultWeather = new WeatherInfo("Одесса");
                     var resultFromJSON = await resultWeather.DeserializeJsonAsync();
-                    var result = new StringBuilder();
-                    result.AppendLine($"Температура: {resultFromJSON.Main.Temp}°C");
 
-                    byte[] buffer = Encoding.UTF8.GetBytes(result.ToString());
+                    var weatherData = new
+                    {
+                        temperature = resultFromJSON?.Main?.Temp,
+                        windSpeed = resultFromJSON?.Wind?.Speed,
+                        description = resultFromJSON?.Weather?.FirstOrDefault()?.Description
+                    };
 
-                    response.ContentType = "text/plain";
+                    string json = JsonSerializer.Serialize(weatherData);
+                    byte[] buffer = Encoding.UTF8.GetBytes(json);
+
+                    response.ContentType = "application/json";
                     response.ContentLength64 = buffer.Length;
                     await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 }
