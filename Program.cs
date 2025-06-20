@@ -9,12 +9,7 @@ namespace ServerWeather
 {
     internal class Program
     {
-
-
-
-
-        
-          static async Task Main()
+        static async Task Main()
         {
             string port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
             string url = $"http://+:{port}/send/"; // Для локального тестирования можно использовать "http://localhost:5000/send/"
@@ -39,16 +34,59 @@ namespace ServerWeather
             HttpListenerResponse response = context.Response;
 
             if (request.HttpMethod != "POST")
+                {
+                    response.StatusCode = 405;
+                    await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("Только POST-запросы"));
+                    response.OutputStream.Close();
+                    return;
+                }
+
+            try
             {
-                response.StatusCode = 405;
-                await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("Только POST-запросы"));
-                response.OutputStream.Close();
-                return;
+                using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
+                string city = await reader.ReadToEndAsync();
+
+                var resultWeather = new WeatherInfo(city);
+                var resultFromJSON = await resultWeather.DeserializeJsonAsync();
+
+                var weatherData = new
+                {
+                    temperature = resultFromJSON?.Main?.Temp,
+                    windSpeed = resultFromJSON?.Wind?.Speed,
+                    description = resultFromJSON?.Weather?.FirstOrDefault()?.Description
+                };
+
+                string json = JsonSerializer.Serialize(weatherData);
+                byte[] buffer = Encoding.UTF8.GetBytes(json);
+
+                response.ContentType = "application/json";
+                response.ContentLength64 = buffer.Length;
+                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+
+            }
+            catch (Exception ex)
+            {
+                string responseText = "Произошла ошибка: "+ ex.Message;
+                byte[] buffer = Encoding.UTF8.GetBytes(responseText);
+
+                await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            }
+            finally { 
+                response.OutputStream.Close();            
             }
 
-            using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
-            string numberStr = await reader.ReadToEndAsync();
 
+        }
+    }
+}
+
+
+
+//===================== Старый код для проверки ==================================================
+
+/*
+ using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
+            string numberStr = await reader.ReadToEndAsync();
             if (int.TryParse(numberStr, out int number))
             {
                 if (number == 100500)
@@ -85,4 +123,7 @@ namespace ServerWeather
     }
 
 }
+
+ 
+ */
 
