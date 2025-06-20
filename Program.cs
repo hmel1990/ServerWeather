@@ -33,6 +33,10 @@ namespace ServerWeather
             HttpListenerRequest request = context.Request;
             HttpListenerResponse response = context.Response;
 
+            response.AddHeader("Access-Control-Allow-Origin", "*");
+
+
+
             if (request.HttpMethod != "POST")
                 {
                     response.StatusCode = 405;
