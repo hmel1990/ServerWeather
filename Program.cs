@@ -12,14 +12,14 @@ namespace ServerWeather
         static async Task Main()
         {
             string port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-            string url = $"http://+:{port}/send/"; // Для локального тестирования можно использовать "http://localhost:5000/send/"
+            string url = $"http://+:{port}/send/";
+            // Для локального тестирования можно использовать "http://localhost:5000/send/"
             //string url = "http://localhost:5000/send/";
 
 
             HttpListener listener = new HttpListener();
             listener.Prefixes.Add(url);
             listener.Start();
-            Console.WriteLine($"Сервер запущен на {url}");
 
             while (true)
             {
@@ -48,25 +48,22 @@ namespace ServerWeather
             try
             {
                 using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
-                string city = await reader.ReadToEndAsync();
+                string data = await reader.ReadToEndAsync();
 
-                var resultWeather = new WeatherInfo(city);
-                var resultFromJSON = await resultWeather.DeserializeJsonAsync();
+                // Десериализация в объект
+                var myData = JsonSerializer.Deserialize<FlatData>(data);
 
-                var weatherData = new
-                {
-                    temperature = resultFromJSON?.Main?.Temp,
-                    windSpeed = resultFromJSON?.Wind?.Speed,
-                    description = resultFromJSON?.Weather?.FirstOrDefault()?.Description
-                };
+                string emailText = $"Адрес: {myData.Adress}\n" +
+                                        $"Жилая площадь: {myData.LivingArea}\n" +
+                                        $"Общая площадь: {myData.TotalArea}";
 
-                string json = JsonSerializer.Serialize(weatherData);
-                byte[] buffer = Encoding.UTF8.GetBytes(json);
+                var emailSender = new SendEmailByGmail();
 
-                response.ContentType = "application/json";
-                response.ContentLength64 = buffer.Length;
-                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                var responseText = await emailSender.SendEmail(emailText);
 
+
+                byte[] buffer = Encoding.UTF8.GetBytes(responseText);
+                await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
             }
             catch (Exception ex)
             {
@@ -83,51 +80,4 @@ namespace ServerWeather
         }
     }
 }
-
-
-
-//===================== Старый код для проверки ==================================================
-
-/*
- using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
-            string numberStr = await reader.ReadToEndAsync();
-            if (int.TryParse(numberStr, out int number))
-            {
-                if (number == 100500)
-                {
-                    var resultWeather = new WeatherInfo("Одесса");
-                    var resultFromJSON = await resultWeather.DeserializeJsonAsync();
-
-                    var weatherData = new
-                    {
-                        temperature = resultFromJSON?.Main?.Temp,
-                        windSpeed = resultFromJSON?.Wind?.Speed,
-                        description = resultFromJSON?.Weather?.FirstOrDefault()?.Description
-                    };
-
-                    string json = JsonSerializer.Serialize(weatherData);
-                    byte[] buffer = Encoding.UTF8.GetBytes(json);
-
-                    response.ContentType = "application/json";
-                    response.ContentLength64 = buffer.Length;
-                    await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                }
-            }
-            else
-            {
-                response.StatusCode = 400;
-                await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("Ошибка: ожидалось число."));
-            }
-
-            response.OutputStream.Close();
-        }
-         
-        
-
-    }
-
-}
-
- 
- */
 
