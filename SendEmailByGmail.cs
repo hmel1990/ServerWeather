@@ -21,7 +21,7 @@ namespace ServerWeather
         {
             Port = 587,
             Credentials = new NetworkCredential(senderEmail, senderPassword),
-            EnableSsl = false
+            EnableSsl = true
         };
 
         public async Task <string> SendEmail (string textMessage)
@@ -33,6 +33,7 @@ namespace ServerWeather
                 mail.To.Add(new MailAddress(receiverEmail));
                 mail.Subject = "Тестовое письмо";
                 mail.Body = $@"{textMessage}";
+                mail.IsBodyHtml = false; // Установите true, если хотите отправить HTML-сообщение
 
                 await smtpClient.SendMailAsync(mail);
 
