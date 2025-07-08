@@ -21,7 +21,7 @@ namespace ServerWeather
         {
             Port = 587,
             Credentials = new NetworkCredential(senderEmail, senderPassword),
-            EnableSsl = true
+            EnableSsl = false
         };
 
         public async Task <string> SendEmail (string textMessage)
