@@ -12,7 +12,7 @@ namespace ServerWeather
     internal class SendEmailByGmail
     {
         private static string senderEmail = "hmelforitstep@gmail.com"; // отправитель
-        private static string senderPassword = "zgzc amfi nmur npps"; // пароль приложения https://github.com/sunmeat/secret_things/blob/main/app_code.txt
+        private static string senderPassword = "cbwx jctt omrh pubx"; // пароль приложения https://github.com/sunmeat/secret_things/blob/main/app_code.txt
         public string receiverEmail = "hmel408757595@gmail.com"; // получатель
 
         // SMTP-клиент для Gmail
