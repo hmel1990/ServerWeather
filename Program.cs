@@ -33,6 +33,18 @@ namespace ServerWeather
             HttpListenerRequest request = context.Request;
             HttpListenerResponse response = context.Response;
 
+            if (request.HttpMethod == "OPTIONS")
+            {
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.AddHeader("Access-Control-Allow-Origin", "*");
+                response.AddHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+                response.AddHeader("Access-Control-Allow-Headers", "Content-Type");
+                response.OutputStream.Close();
+                return;
+            }
+
+
+
             response.AddHeader("Access-Control-Allow-Origin", "*");
 
 
