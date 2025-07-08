@@ -34,7 +34,7 @@ namespace ServerWeather
                 mail.Subject = "Тестовое письмо";
                 mail.Body = $@"{textMessage}";
 
-                smtpClient.Send(mail);
+                await smtpClient.SendMailAsync(mail);
 
                 return "Письмо успешно отправлено!";
 
