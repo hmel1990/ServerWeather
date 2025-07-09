@@ -17,5 +17,8 @@ namespace ServerWeather
 
         [JsonPropertyName("totalArea")]
         public string? TotalArea { get; set; }
+
+        [JsonPropertyName("photo")]
+        public List <string>? Photo { get; set; }
     }
 }

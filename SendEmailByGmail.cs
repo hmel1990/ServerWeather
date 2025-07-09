@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ServerWeather
 {
@@ -24,7 +26,16 @@ namespace ServerWeather
             EnableSsl = true
         };
 
-        public async Task <string> SendEmail (string textMessage)
+        private string GetFileExtension(string mime)
+        {
+            return mime switch
+            {
+                "image/jpeg" => "jpg",
+                "image/png" => "png",
+                _ => "bin" // по умолчанию, если MIME не известен
+            };
+        }
+        public async Task <string> SendEmail (FlatData myData)
         {
             try
             {
@@ -32,8 +43,31 @@ namespace ServerWeather
                 mail.From = new MailAddress(senderEmail);
                 mail.To.Add(new MailAddress(receiverEmail));
                 mail.Subject = "Тестовое письмо";
+
+                string textMessage = $@"Адрес: {myData.Adress}\n" +
+                                         $"Жилая площадь: {myData.LivingArea}\n" +
+                                         $"Общая площадь: {myData.TotalArea}";
+
                 mail.Body = $@"{textMessage}";
-                mail.IsBodyHtml = false; // Установите true, если хотите отправить HTML-сообщение
+
+                int i = 1;
+                foreach (var photo in myData.Photo)
+                {
+                    var match = Regex.Match(photo, @"data:(.+?);base64,(.+)");
+                    if (!match.Success) continue;
+
+                    string mime = match.Groups[1].Value;
+                    string base64 = match.Groups[2].Value;
+
+                    byte[] imageBytes = Convert.FromBase64String(base64);
+
+                    var stream = new MemoryStream(imageBytes);
+                    var attachment = new Attachment(stream, $"photo{i}.{GetFileExtension(mime)}", mime);
+                    mail.Attachments.Add(attachment);
+                    i++;
+                }
+
+                    mail.IsBodyHtml = false; // Установите true, если хотите отправить HTML-сообщение
 
                 await smtpClient.SendMailAsync(mail);
 

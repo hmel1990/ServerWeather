@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace ServerWeather
 {
@@ -65,13 +66,13 @@ namespace ServerWeather
                 // Десериализация в объект
                 var myData = JsonSerializer.Deserialize<FlatData>(data);
 
-                string emailText = $"Адрес: {myData.Adress}\n" +
-                                        $"Жилая площадь: {myData.LivingArea}\n" +
-                                        $"Общая площадь: {myData.TotalArea}";
+               
+
+
 
                 var emailSender = new SendEmailByGmail();
 
-                var responseText = await emailSender.SendEmail(emailText);
+                var responseText = await emailSender.SendEmail(myData);
 
 
                 byte[] buffer = Encoding.UTF8.GetBytes(responseText);
