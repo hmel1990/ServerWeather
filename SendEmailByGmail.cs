@@ -44,12 +44,19 @@ namespace ServerWeather
                 mail.To.Add(new MailAddress(receiverEmail));
                 mail.Subject = "Тестовое письмо";
 
-                string textMessage = $@"Адрес: {myData.Adress}\n" +
+                string textMessage = "";
+
+                if (!string.IsNullOrEmpty(myData.Adress))
+                {
+                     textMessage += $@"Адрес: {myData.Adress}\n" +
                                          $"Жилая площадь: {myData.LivingArea}\n" +
                                          $"Общая площадь: {myData.TotalArea}\n" +
                                          $"Количество комнат: {myData.RoomsNumber}\n" +
                                          $"Этаж: {myData.Floor}\n" +
                                          $"Этажность: {myData.FloorNumber}\n";
+                }
+
+
 
                 if (!string.IsNullOrEmpty(myData.Question))
                 {
