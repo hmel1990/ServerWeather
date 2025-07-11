@@ -48,7 +48,7 @@ namespace ServerWeather
 
                 if (!string.IsNullOrEmpty(myData.Adress))
                 {
-                     textMessage += $@"Адрес: {myData.Adress}\n" +
+                     textMessage += $@"Адрес: {myData.Adress}" + "\n" +
                                          $"Жилая площадь: {myData.LivingArea}\n" +
                                          $"Общая площадь: {myData.TotalArea}\n" +
                                          $"Количество комнат: {myData.RoomsNumber}\n" +
