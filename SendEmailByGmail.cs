@@ -66,24 +66,28 @@ namespace ServerWeather
 
                 mail.Body = $@"{textMessage}";
 
-                int i = 1;
-                foreach (var photo in myData.Photo)
+                if (myData.Photo != null)
                 {
-                    var match = Regex.Match(photo, @"data:(.+?);base64,(.+)");
-                    if (!match.Success) continue;
 
-                    string mime = match.Groups[1].Value;
-                    string base64 = match.Groups[2].Value;
+                    int i = 1;
+                    foreach (var photo in myData.Photo)
+                    {
+                        var match = Regex.Match(photo, @"data:(.+?);base64,(.+)");
+                        if (!match.Success) continue;
 
-                    byte[] imageBytes = Convert.FromBase64String(base64);
+                        string mime = match.Groups[1].Value;
+                        string base64 = match.Groups[2].Value;
 
-                    var stream = new MemoryStream(imageBytes);
-                    var attachment = new Attachment(stream, $"photo{i}.{GetFileExtension(mime)}", mime);
-                    mail.Attachments.Add(attachment);
-                    i++;
+                        byte[] imageBytes = Convert.FromBase64String(base64);
+
+                        var stream = new MemoryStream(imageBytes);
+                        var attachment = new Attachment(stream, $"photo{i}.{GetFileExtension(mime)}", mime);
+                        mail.Attachments.Add(attachment);
+                        i++;
+                    }
                 }
 
-                    mail.IsBodyHtml = false; // Установите true, если хотите отправить HTML-сообщение
+                mail.IsBodyHtml = false; // Установите true, если хотите отправить HTML-сообщение
 
                 await smtpClient.SendMailAsync(mail);
 
