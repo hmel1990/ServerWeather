@@ -18,6 +18,18 @@ namespace ServerWeather
         [JsonPropertyName("totalArea")]
         public string? TotalArea { get; set; }
 
+        [JsonPropertyName("roomsNumber")]
+        public string? RoomsNumber { get; set; }
+
+        [JsonPropertyName("floor")]
+        public string? Floor { get; set; }
+
+        [JsonPropertyName("floorNumber")]
+        public string? FloorNumber { get; set; }
+
+        [JsonPropertyName("question")]
+        public string? Question { get; set; }
+
         [JsonPropertyName("photo")]
         public List <string>? Photo { get; set; }
     }

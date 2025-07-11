@@ -46,7 +46,16 @@ namespace ServerWeather
 
                 string textMessage = $@"Адрес: {myData.Adress}\n" +
                                          $"Жилая площадь: {myData.LivingArea}\n" +
-                                         $"Общая площадь: {myData.TotalArea}";
+                                         $"Общая площадь: {myData.TotalArea}\n" +
+                                         $"Количество комнат: {myData.RoomsNumber}\n" +
+                                         $"Этаж: {myData.Floor}\n" +
+                                         $"Этажность: {myData.FloorNumber}\n";
+
+                if (!string.IsNullOrEmpty(myData.Question))
+                {
+                    textMessage += $"Вопрос: {myData.Question}\n";
+                }
+               
 
                 mail.Body = $@"{textMessage}";
 
